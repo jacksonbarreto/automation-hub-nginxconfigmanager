@@ -1,7 +1,7 @@
 package dto
 
 type Automation struct {
-	Name     string
-	Hostname string
-	Port     int
+	Name     string `json:"name"`
+	Hostname string `json:"hostname"`
+	Port     int    `json:"port"`
 }
