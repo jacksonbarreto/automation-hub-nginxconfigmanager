@@ -1,10 +1,10 @@
 package autoconfig
 
 const configTemplate = `
-location /{{.Name}}/ {
+location /{{.Name}} {
     allow 127.0.0.1;
     deny all;
     auth_request /auth-verify;
-    proxy_pass http://{{.Hostname}}:{{.Port}}/;
+    proxy_pass http://{{.Hostname}}:{{.Port}};
 }
 `
