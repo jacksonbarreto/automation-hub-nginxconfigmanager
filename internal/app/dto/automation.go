@@ -5,16 +5,16 @@ import (
 )
 
 type Automation struct {
-	Name     string `json:"name"`
-	Hostname string `json:"hostname"`
-	Port     int    `json:"port"`
+	Name string `json:"name"`
+	Host string `json:"hostname"`
+	Port int    `json:"port"`
 }
 
 func (a *Automation) Validate() error {
 	if a.Name == "" {
 		return fmt.Errorf("name is required")
 	}
-	if a.Hostname == "" {
+	if a.Host == "" {
 		return fmt.Errorf("hostname is required")
 	}
 	if a.Port <= 0 || a.Port > 65535 {
