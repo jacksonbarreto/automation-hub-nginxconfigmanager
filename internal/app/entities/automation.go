@@ -18,6 +18,9 @@ func (a *Automation) Validate() error {
 	if a.Host == "" {
 		return fmt.Errorf("hostname is required")
 	}
+	if a.URLPath == "" {
+		return fmt.Errorf("URL path is required")
+	}
 	if a.Port <= 0 || a.Port > 65535 {
 		return fmt.Errorf("error: Port %d is not valid", a.Port)
 	}

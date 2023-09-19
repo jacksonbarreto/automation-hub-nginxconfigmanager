@@ -23,7 +23,11 @@ const (
 
 func manageConfig(action ConfigAction, auto entities.Automation) error {
 	var err error
-	fmt.Printf("Managing config: %v\n", auto)
+	log.Printf("Managing config: %v\n", auto)
+	err = auto.Validate()
+	if err != nil {
+		return err
+	}
 	switch action {
 	case Add:
 		err = addConfig(auto)
@@ -43,6 +47,7 @@ func manageConfig(action ConfigAction, auto entities.Automation) error {
 }
 
 func addConfig(auto entities.Automation) error {
+
 	filePath := filepath.Join(config.AppConfig.ConfigDir, auto.URLPath+".conf")
 	tmpl, err := template.New("config").Parse(configTemplate)
 	if err != nil {
