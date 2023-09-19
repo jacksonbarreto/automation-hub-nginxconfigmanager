@@ -3,7 +3,6 @@ package config
 import (
 	"log"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -36,17 +35,6 @@ func Init() {
 func getStringListFromEnv(envVarName, defaultValue string) []string {
 	value := getEnvString(envVarName, defaultValue)
 	return strings.Split(value, ",")
-}
-
-func getEnvInt(key string, defaultValue int) int {
-	if value, exists := os.LookupEnv(key); exists {
-		intVal, err := strconv.Atoi(value)
-		if err == nil {
-			return intVal
-		}
-	}
-	log.Printf("Using default value for %s: %v", key, defaultValue)
-	return defaultValue
 }
 
 func getEnvString(key string, defaultValue string) string {
