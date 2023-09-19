@@ -4,35 +4,38 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const (
-	serverPort     string = "SERVER_PORT"
-	baseUrl        string = "BASE_URL"
 	nginxContainer string = "NGINX_CONTAINER"
 	configDir      string = "CONFIG_DIR"
+	kafkaBrokers   string = "KAFKA_BROKERS"
+	kafkaTopic     string = "KAFKA_TOPIC"
 )
 
 type Configuration struct {
 	ConfigDir      string
-	BaseUrl        string
-	ServerPort     string
 	NginxContainer string
+	Brokers        []string
+	Topic          string
 }
 
-var Config Configuration
+var AppConfig Configuration
 
 func Init() {
-	numPort := getEnvInt(serverPort, 80)
-	if numPort < 0 || numPort > 65535 {
-		log.Fatalf("error: Port %d is not valid, please check the environment variable: %s", numPort, serverPort)
-	}
-	Config = Configuration{
+	kafkaBrokersList := getStringListFromEnv(kafkaBrokers, "kafka1:9092,kafka2:9093,kafka3:9094")
+	AppConfig = Configuration{
 		ConfigDir:      getEnvString(configDir, "/app/sites-enabled"),
-		BaseUrl:        getEnvString(baseUrl, "/config-manager"),
-		ServerPort:     ":" + strconv.Itoa(numPort),
 		NginxContainer: getEnvString(nginxContainer, "gateway"),
+		Brokers:        kafkaBrokersList,
+		Topic:          getEnvString(kafkaTopic, "automation-events"),
 	}
+}
+
+func getStringListFromEnv(envVarName, defaultValue string) []string {
+	value := getEnvString(envVarName, defaultValue)
+	return strings.Split(value, ",")
 }
 
 func getEnvInt(key string, defaultValue int) int {

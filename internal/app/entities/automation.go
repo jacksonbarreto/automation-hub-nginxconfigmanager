@@ -1,13 +1,14 @@
-package dto
+package entities
 
 import (
 	"fmt"
 )
 
 type Automation struct {
-	Name string `json:"name"`
-	Host string `json:"hostname"`
-	Port int    `json:"port"`
+	Name    string `json:"name"`
+	URLPath string `json:"urlPath"`
+	Host    string `json:"hostname"`
+	Port    int    `json:"port"`
 }
 
 func (a *Automation) Validate() error {

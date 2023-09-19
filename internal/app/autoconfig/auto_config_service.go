@@ -2,8 +2,11 @@ package autoconfig
 
 import (
 	"automation-hub-nginxconfigmanager/internal/app/config"
-	"automation-hub-nginxconfigmanager/internal/app/dto"
+	"automation-hub-nginxconfigmanager/internal/app/entities"
+	"encoding/json"
 	"fmt"
+	"github.com/IBM/sarama"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,7 +21,7 @@ const (
 	Update
 )
 
-func manageConfig(action ConfigAction, auto dto.Automation) error {
+func manageConfig(action ConfigAction, auto entities.Automation) error {
 	var err error
 
 	switch action {
@@ -39,8 +42,8 @@ func manageConfig(action ConfigAction, auto dto.Automation) error {
 	return reloadNginx()
 }
 
-func addConfig(auto dto.Automation) error {
-	filePath := filepath.Join(config.Config.ConfigDir, auto.Name+".conf")
+func addConfig(auto entities.Automation) error {
+	filePath := filepath.Join(config.AppConfig.ConfigDir, auto.Name+".conf")
 	tmpl, err := template.New("config").Parse(configTemplate)
 	if err != nil {
 		return err
@@ -61,14 +64,14 @@ func addConfig(auto dto.Automation) error {
 }
 
 func removeConfig(name string) error {
-	filePath := filepath.Join(config.Config.ConfigDir, name+".conf")
+	filePath := filepath.Join(config.AppConfig.ConfigDir, name+".conf")
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		return fmt.Errorf("config %s not found", name)
 	}
 	return os.Remove(filePath)
 }
 
-func updateConfig(auto dto.Automation) error {
+func updateConfig(auto entities.Automation) error {
 	if err := removeConfig(auto.Name); err != nil {
 		return err
 	}
@@ -76,6 +79,31 @@ func updateConfig(auto dto.Automation) error {
 }
 
 func reloadNginx() error {
-	cmd := exec.Command("docker", "exec", config.Config.NginxContainer, "nginx", "-s", "reload")
+	cmd := exec.Command("docker", "exec", config.AppConfig.NginxContainer, "nginx", "-s", "reload")
 	return cmd.Run()
+}
+
+func processMessage(msg *sarama.ConsumerMessage) {
+	var event entities.AutomationEvent
+	err := json.Unmarshal(msg.Value, &event)
+	if err != nil {
+		log.Printf("Failed to unmarshal message: %v", err)
+		return
+	}
+
+	switch event.Type {
+	case entities.CreateEvent:
+		err = manageConfig(Add, *event.Automation)
+	case entities.UpdateEvent:
+		err = manageConfig(Update, *event.Automation)
+	case entities.DeleteEvent:
+		err = manageConfig(Remove, *event.Automation)
+	default:
+		log.Printf("Unknown event type: %s", event.Type)
+		return
+	}
+
+	if err != nil {
+		log.Printf("Failed to process event: %v", err)
+	}
 }
