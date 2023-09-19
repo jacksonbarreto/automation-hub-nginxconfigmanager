@@ -23,7 +23,7 @@ const (
 
 func manageConfig(action ConfigAction, auto entities.Automation) error {
 	var err error
-
+	fmt.Printf("Managing config: %v\n", auto)
 	switch action {
 	case Add:
 		err = addConfig(auto)
