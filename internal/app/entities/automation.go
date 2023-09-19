@@ -7,7 +7,7 @@ import (
 type Automation struct {
 	Name    string `json:"name"`
 	URLPath string `json:"urlPath"`
-	Host    string `json:"hostname"`
+	Host    string `json:"host"`
 	Port    int    `json:"port"`
 }
 
