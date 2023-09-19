@@ -28,7 +28,7 @@ func manageConfig(action ConfigAction, auto entities.Automation) error {
 	case Add:
 		err = addConfig(auto)
 	case Remove:
-		err = removeConfig(auto.Name)
+		err = removeConfig(auto.URLPath)
 	case Update:
 		err = updateConfig(auto)
 	default:
@@ -43,7 +43,7 @@ func manageConfig(action ConfigAction, auto entities.Automation) error {
 }
 
 func addConfig(auto entities.Automation) error {
-	filePath := filepath.Join(config.AppConfig.ConfigDir, auto.Name+".conf")
+	filePath := filepath.Join(config.AppConfig.ConfigDir, auto.URLPath+".conf")
 	tmpl, err := template.New("config").Parse(configTemplate)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func removeConfig(name string) error {
 }
 
 func updateConfig(auto entities.Automation) error {
-	if err := removeConfig(auto.Name); err != nil {
+	if err := removeConfig(auto.URLPath); err != nil {
 		return err
 	}
 	return addConfig(auto)
