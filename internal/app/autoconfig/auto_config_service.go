@@ -78,7 +78,7 @@ func removeConfig(name string) error {
 }
 
 func updateConfig(auto entities.Automation) error {
-	if err := removeConfig(auto.URLPath); err != nil {
+	if err := removeConfig(auto.OldUrlPath); err != nil {
 		return err
 	}
 	return addConfig(auto)
