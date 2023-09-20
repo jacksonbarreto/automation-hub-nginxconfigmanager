@@ -5,10 +5,11 @@ import (
 )
 
 type Automation struct {
-	Name    string `json:"name"`
-	URLPath string `json:"urlPath"`
-	Host    string `json:"host"`
-	Port    int    `json:"port"`
+	Name       string `json:"name"`
+	URLPath    string `json:"urlPath"`
+	Host       string `json:"host"`
+	Port       int    `json:"port"`
+	OldUrlPath string `json:"oldUrlPath,omitempty"`
 }
 
 func (a *Automation) Validate() error {
