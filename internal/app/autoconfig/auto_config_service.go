@@ -84,7 +84,8 @@ func updateConfig(auto entities.Automation) error {
 }
 
 func reloadNginx() error {
-	cmd := exec.Command("docker", "exec", config.AppConfig.NginxContainer, "nginx", "-s", "reload")
+	//cmd := exec.Command("docker", "exec", config.AppConfig.NginxContainer, "nginx", "-s", "reload")
+	cmd := exec.Command("docker", "kill", "-s", "HUP", config.AppConfig.NginxContainer)
 	return cmd.Run()
 }
 
