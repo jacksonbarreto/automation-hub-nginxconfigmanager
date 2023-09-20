@@ -3,12 +3,13 @@ package autoconfig
 import (
 	"automation-hub-nginxconfigmanager/internal/app/config"
 	"automation-hub-nginxconfigmanager/internal/app/entities"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/IBM/sarama"
+	"github.com/docker/docker/client"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"text/template"
 )
@@ -84,9 +85,13 @@ func updateConfig(auto entities.Automation) error {
 }
 
 func reloadNginx() error {
-	//cmd := exec.Command("docker", "exec", config.AppConfig.NginxContainer, "nginx", "-s", "reload")
-	cmd := exec.Command("docker", "kill", "-s", "HUP", config.AppConfig.NginxContainer)
-	return cmd.Run()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return err
+	}
+	defer cli.Close()
+
+	return cli.ContainerKill(context.Background(), config.AppConfig.NginxContainer, "HUP")
 }
 
 func processMessage(msg *sarama.ConsumerMessage) {
