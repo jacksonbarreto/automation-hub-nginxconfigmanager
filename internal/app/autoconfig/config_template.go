@@ -1,6 +1,6 @@
 package autoconfig
 
-const configTemplate = `location /{{.URLPath}} {
+const configTemplate = `location /{{.URLPath}}/ {
 	set $upstream_host {{.Host}};
     set $upstream_port {{.Port}};
     auth_request /auth-verify;
